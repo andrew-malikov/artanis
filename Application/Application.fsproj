@@ -6,9 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Entities.fs" />
     <Compile Include="Filters.fs" />
-    <Compile Include="Filters\CollectionFilters.fs" />
+    <Compile Include="Assets\AssetEntity.fs" />
+    <Compile Include="Assets\AssetQueries.fs" />
+    <Compile Include="Assets\AssetFilters.fs" />
+    <Compile Include="Projects\ProjectEntity.fs" />
+    <Compile Include="Projects\ProjectFilters.fs" />
+    <Compile Include="Collections\CollectionEntity.fs" />
+    <Compile Include="Collections\CollectionFilters.fs" />
   </ItemGroup>
 
 </Project>
