@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Interface", "Interface\Interface.fsproj", "{FA4CB9D9-58EC-4D8F-ADB2-1D8CDA100BE2}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Artstation", "Artstation\Artstation.fsproj", "{6988AC92-FC14-4D6D-B16A-32B359A74287}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Application", "Application\Application.fsproj", "{7D6AB604-C87E-4455-AE6F-8B6846D21425}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FA4CB9D9-58EC-4D8F-ADB2-1D8CDA100BE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA4CB9D9-58EC-4D8F-ADB2-1D8CDA100BE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA4CB9D9-58EC-4D8F-ADB2-1D8CDA100BE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA4CB9D9-58EC-4D8F-ADB2-1D8CDA100BE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6988AC92-FC14-4D6D-B16A-32B359A74287}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6988AC92-FC14-4D6D-B16A-32B359A74287}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6988AC92-FC14-4D6D-B16A-32B359A74287}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6988AC92-FC14-4D6D-B16A-32B359A74287}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D6AB604-C87E-4455-AE6F-8B6846D21425}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D6AB604-C87E-4455-AE6F-8B6846D21425}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D6AB604-C87E-4455-AE6F-8B6846D21425}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D6AB604-C87E-4455-AE6F-8B6846D21425}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
