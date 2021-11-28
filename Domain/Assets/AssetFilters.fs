@@ -1,7 +1,7 @@
-namespace Application.Assets
+namespace Domain.Assets
 
-open Application.Assets.AssetEntity
-open Application.Assets.AssetQueries
+open Domain.Assets.AssetEntity
+open Domain.Assets.AssetQueries
 
 module AssetFilters =
     let filterAssetByType (filterType: AssetType) asset =

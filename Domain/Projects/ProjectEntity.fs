@@ -1,8 +1,8 @@
-namespace Application.Projects
+namespace Domain.Projects
 
 open System
 
-open Application.Assets.AssetEntity
+open Domain.Assets.AssetEntity
 
 module ProjectEntity =
     type Project =

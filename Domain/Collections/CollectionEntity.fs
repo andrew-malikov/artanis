@@ -1,6 +1,6 @@
-namespace Application.Collections
+namespace Domain.Collections
 
-open Application.Projects.ProjectEntity
+open Domain.Projects.ProjectEntity
 
 module CollectionEntity =
     type CollectionMetadata =

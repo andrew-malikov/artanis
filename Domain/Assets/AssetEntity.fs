@@ -1,4 +1,4 @@
-namespace Application.Assets
+namespace Domain.Assets
 
 module AssetEntity =
     type AssetType =

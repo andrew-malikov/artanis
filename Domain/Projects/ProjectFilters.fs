@@ -1,7 +1,7 @@
-namespace Application.Projects
+namespace Domain.Projects
 
-open Application.Filters
-open Application.Projects.ProjectEntity
+open Domain.Filters
+open Domain.Projects.ProjectEntity
 
 module ProjectFilters =
     let filterProject assetFilters project =

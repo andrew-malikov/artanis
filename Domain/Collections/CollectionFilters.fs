@@ -1,7 +1,7 @@
-namespace Application.Collections
+namespace Domain.Collections
 
-open Application.Filters
-open Application.Collections.CollectionEntity
+open Domain.Filters
+open Domain.Collections.CollectionEntity
 
 module CollectionFilters =
     let filterCollection projectFilters collection =

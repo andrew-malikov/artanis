@@ -1,8 +1,10 @@
-namespace Artstation
+namespace Artstation.Projects
 
 open System
 
 open Flurl.Http
+
+open Artstation.Api
 
 module ProjectApi =
     type AssetResponse =
@@ -87,8 +89,7 @@ module ProjectApi =
           visibleOnArtstation: bool }
 
     let getProject (id: int) =
-        Api
-            .BaseUrl
+        BaseUrl
             .AppendPathSegments("project", $"{id}.json")
             .GetJsonAsync<ProjectResponse>()
         |> Async.AwaitTask

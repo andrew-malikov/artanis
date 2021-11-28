@@ -1,4 +1,4 @@
-namespace Application
+namespace Domain
 
 module Filters =
     let rec filterOne filters item =

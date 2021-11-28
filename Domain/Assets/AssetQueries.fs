@@ -1,6 +1,6 @@
-namespace Application.Assets
+namespace Domain.Assets
 
-open Application.Assets.AssetEntity
+open Domain.Assets.AssetEntity
 
 module AssetQueries =
     let getAssetSize asset =

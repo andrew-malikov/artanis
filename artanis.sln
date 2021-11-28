@@ -7,7 +7,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Interface", "Interface\Inte
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Artstation", "Artstation\Artstation.fsproj", "{6988AC92-FC14-4D6D-B16A-32B359A74287}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Application", "Application\Application.fsproj", "{7D6AB604-C87E-4455-AE6F-8B6846D21425}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Domain", "Domain\Domain.fsproj", "{7D6AB604-C87E-4455-AE6F-8B6846D21425}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,8 +1,9 @@
-namespace Artstation
+namespace Artstation.Collections
 
 open Flurl.Http
 
-open Artstation.ProjectApi
+open Artstation.Api
+open Artstation.Projects.ProjectApi
 
 module CollectionApi =
     type CollectionResponse =
@@ -20,16 +21,14 @@ module CollectionApi =
           totalCount: int }
 
     let getCollection (id: int) (username: string) =
-        Api
-            .BaseUrl
+        BaseUrl
             .AppendPathSegments("collections", $"{id}.json")
             .SetQueryParam("username", username)
             .GetJsonAsync<CollectionResponse>()
         |> Async.AwaitTask
 
     let getCollectionProjects (id: int) (page: int) =
-        Api
-            .BaseUrl
+        BaseUrl
             .AppendPathSegments("collections", id, "projects.json")
             .SetQueryParam("collection_id", id)
             .SetQueryParam("page", page)
