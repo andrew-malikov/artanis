@@ -5,21 +5,9 @@ open System
 open Flurl.Http
 
 open Artstation.Api
+open Artstation.Assets.AssetFactory
 
 module ProjectApi =
-    type AssetResponse =
-        { assetType: string
-          hasEmbeddedPlayer: bool
-          hasImage: bool
-          height: int
-          id: int
-          imageUrl: string
-          position: int
-          title: string option
-          titleFormatted: string
-          viewportConstraintType: string
-          width: int }
-
     type SoftwareItemResponse = { iconUrl: string; name: string }
 
     type UserResponse =

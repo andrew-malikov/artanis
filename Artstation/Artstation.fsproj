@@ -7,12 +7,19 @@
 
   <ItemGroup>
     <Compile Include="Api.fs" />
+    <Compile Include="Assets\AssetFactory.fs" />
     <Compile Include="Projects\ProjectApi.fs" />
+    <Compile Include="Projects\ProjectFactory.fs" />
     <Compile Include="Collections\CollectionApi.fs" />
+    <Compile Include="Collections\CollectionFactory.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Flurl.Http" Version="3.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.fsproj" />
+  </ItemGroup>
+  
 </Project>
