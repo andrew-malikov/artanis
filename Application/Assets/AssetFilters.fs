@@ -21,3 +21,10 @@ module AssetFilters =
 
     let filterAssetByEqualSize size asset =
         filterAssetBySize (fun filterSize assetSize -> filterSize = assetSize) size asset
+
+    let filterAssetByOrientation filterOrientation asset =
+        getAssetOrientation asset
+        |> Option.bind
+            (function
+            | assetOrientation when assetOrientation = filterOrientation -> Some asset
+            | _ -> None)

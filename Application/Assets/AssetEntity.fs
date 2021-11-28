@@ -11,8 +11,9 @@ module AssetEntity =
     type Size = { width: int; height: int }
 
     type Orientation =
-        | Horizontal
-        | Vertical
+        | Landscape
+        | Portrait
+        | Square
 
     type Asset =
         { assetType: AssetType

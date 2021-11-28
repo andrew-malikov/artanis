@@ -20,3 +20,11 @@ module AssetQueries =
                 Some
                     { width = asset.width / divisor
                       height = asset.height / divisor })
+
+    let getAssetOrientation asset =
+        getAssetAspectRatio asset
+        |> Option.bind
+            (function
+            | { width = width; height = height } when width > height -> Some Landscape
+            | { width = width; height = height } when width < height -> Some Portrait
+            | _ -> Some Square)
