@@ -20,7 +20,7 @@ module AssetFactory =
         function
         | "image" -> Some Image
         | "video" -> Some Video
-        | "Cover" -> Some Cover
+        | "cover" -> Some Cover
         | _ -> None
     
     let getAsset assetResponse =
