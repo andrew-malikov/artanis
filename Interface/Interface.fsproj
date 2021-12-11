@@ -5,4 +5,13 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console" Version="0.43.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Collections\CollectionCommands.fs" />
+    <Compile Include="Startup.fs" />
+  </ItemGroup>
+
 </Project>

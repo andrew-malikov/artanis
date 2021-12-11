@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <Compile Include="Collections\CollectionUseCases.fs" />
-    <Folder Include="Projects" />
+    <Compile Include="Projects\ProjectUseCases.fs" />
   </ItemGroup>
 
   <ItemGroup>

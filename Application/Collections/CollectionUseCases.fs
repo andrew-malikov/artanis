@@ -6,7 +6,7 @@ module CollectionUseCases =
     let getMetadata fetchCollection mapCollection collectionId username : Async<CollectionMetadata> =
         async {
             let! collectionMetadata = fetchCollection collectionId username
-
+            
             return mapCollection collectionMetadata
         }
 
