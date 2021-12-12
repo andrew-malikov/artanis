@@ -14,4 +14,9 @@
     <Compile Include="Startup.fs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Artstation\Artstation.fsproj" />
+    <ProjectReference Include="..\Application\Application.fsproj" />
+  </ItemGroup>
+
 </Project>

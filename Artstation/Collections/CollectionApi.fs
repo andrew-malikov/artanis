@@ -20,20 +20,30 @@ module CollectionApi =
         { data: EmptyProjectResponse List
           totalCount: int }
 
-    let getCollection (id: int) (username: string) =
-        BaseUrl
-            .AppendPathSegments("collections", $"{id}.json")
-            .SetQueryParam("username", username)
-            .GetJsonAsync<CollectionResponse>()
-        |> Async.AwaitTask
+    let getCollection (id: int) (username: string) : Async<CollectionResponse> =
+        async {
+            let! rawCollection =
+                BaseUrl()
+                    .AppendPathSegments("collections", $"{id}.json")
+                    .SetQueryParam("username", username)
+                    .GetStringAsync()
+                |> Async.AwaitTask
 
-    let getCollectionProjects (id: int) (page: int) =
-        BaseUrl
-            .AppendPathSegments("collections", id, "projects.json")
-            .SetQueryParam("collection_id", id)
-            .SetQueryParam("page", page)
-            .GetJsonAsync<CollectionProjectPageResponse>()
-        |> Async.AwaitTask
+            return parseJson rawCollection
+        }
+
+    let getCollectionProjects (id: int) (page: int) : Async<CollectionProjectPageResponse> =
+        async {
+            let! rawCollectionProjects =
+                BaseUrl()
+                    .AppendPathSegments("collections", id, "projects.json")
+                    .SetQueryParam("collection_id", id)
+                    .SetQueryParam("page", page)
+                    .GetStringAsync()
+                |> Async.AwaitTask
+
+            return parseJson rawCollectionProjects
+        }
 
     let getAllCollectionProjects id =
         let rec fetchProjects page =

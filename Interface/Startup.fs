@@ -12,7 +12,7 @@ module Startup =
             (fun config ->
                 config
                     .AddCommand<FetchCollectionCommand>("collection")
-                    .WithDescription("fetch collection data")
+                    .WithDescription("fetch the collection data")
                 |> ignore)
 
         cli

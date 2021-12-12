@@ -17,7 +17,6 @@ module ProjectApi =
           fullName: string
           headline: string
           id: int
-          isOrganizationOwner: bool
           isPlusMember: bool
           isStaff: bool
           largeAvatarUrl: string
@@ -45,11 +44,15 @@ module ProjectApi =
           updatedAt: DateTime
           userId: int }
 
+    type Medium = { name: string; id: int }
+
+    type Category = { name: string; id: int }
+
     type ProjectResponse =
         { adminAdultContent: bool
           adultContent: bool
           assets: AssetResponse List
-          categories: {| name: string; id: int |} List
+          categories: Category List
           commentsCount: int
           coverUrl: string
           createdAt: DateTime
@@ -60,8 +63,8 @@ module ProjectApi =
           hideAsAdult: bool
           id: int
           likesCount: int
-          medium: {| name: string; id: int |}
-          mediums: {| name: string; id: int |} List
+          medium: Medium option
+          mediums: Medium List
           permalink: string
           publishedAt: DateTime
           slug: string
@@ -76,11 +79,16 @@ module ProjectApi =
           visible: bool
           visibleOnArtstation: bool }
 
-    let getProject (id: int) =
-        BaseUrl
-            .AppendPathSegments("project", $"{id}.json")
-            .GetJsonAsync<ProjectResponse>()
-        |> Async.AwaitTask
+    let getProject (id: int) : Async<ProjectResponse> =
+        async {
+            let! rawProject =
+                BaseUrl()
+                    .AppendPathSegments("projects", $"{id}.json")
+                    .GetStringAsync()
+                |> Async.AwaitTask
+
+            return parseJson rawProject
+        }
 
     let rec getProjects (ids: int list) =
         match ids with
