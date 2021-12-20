@@ -11,9 +11,10 @@ module AssetQueries =
         function
         | a, b when a = b -> Some a
         | a, b when a > b -> gcd (a - b, b)
+        | a, b when b > a -> gcd (b - a, a)
         | _ -> None
 
-    let getAssetAspectRatio asset =
+    let getAssetAspectRatio asset : AspectRatio Option =
         gcd (asset.width, asset.height)
         |> Option.bind
             (fun divisor ->

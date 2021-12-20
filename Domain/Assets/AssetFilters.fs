@@ -9,7 +9,7 @@ module AssetFilters =
         | actualType when actualType = filterType -> Some asset
         | _ -> None
 
-    let filterAssetByAspectRation filterRatio asset =
+    let filterAssetByAspectRation (filterRatio: AspectRatio) asset =
         match getAssetAspectRatio asset with
         | Some assetAspectRation when filterRatio = assetAspectRation -> Some asset
         | _ -> None

@@ -22,7 +22,6 @@ module CollectionCommands =
         [<CommandArgument(1, "<username>")>]
         member val username: string = username
 
-
     type FetchCollectionCommand() =
         inherit AsyncCommand<FetchCollectionRequest>()
 
@@ -33,14 +32,12 @@ module CollectionCommands =
                         (CollectionUseCases.getMetadata
                             CollectionApi.getCollection
                             CollectionFactory.getCollectionMetadata)
-                        (ProjectUseCases.getProjects
-                            CollectionApi.getAllCollectionProjects
-                            ProjectFactory.getProject)
+                        (ProjectUseCases.getProjects CollectionApi.getAllCollectionProjects ProjectFactory.getProject)
                         request.collectionId
                         request.username
 
                 AnsiConsole.WriteLine(collection.ToString())
-                
+
                 return 0
             }
             |> Async.StartAsTask
