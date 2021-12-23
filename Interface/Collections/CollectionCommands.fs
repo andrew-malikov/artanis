@@ -11,7 +11,7 @@ open Artstation.Collections
 open Artstation.Projects
 
 module CollectionCommands =
-    type FetchCollectionRequest(collectionId, username) =
+    type FetchCollectionRequestArgs(collectionId, username) =
         inherit CommandSettings()
 
         [<Description("Collection id")>]
@@ -23,9 +23,13 @@ module CollectionCommands =
         member val username: string = username
 
     type FetchCollectionCommand() =
-        inherit AsyncCommand<FetchCollectionRequest>()
+        inherit AsyncCommand<FetchCollectionRequestArgs>()
 
         override this.ExecuteAsync(context, request) =
+            let fetchRequest: CollectionUseCases.GetCollectionRequest =
+                { collectionId = request.collectionId
+                  username = request.username }
+
             async {
                 let! collection =
                     CollectionUseCases.getCollection
@@ -33,8 +37,7 @@ module CollectionCommands =
                             CollectionApi.getCollection
                             CollectionFactory.getCollectionMetadata)
                         (ProjectUseCases.getProjects CollectionApi.getAllCollectionProjects ProjectFactory.getProject)
-                        request.collectionId
-                        request.username
+                        fetchRequest
 
                 AnsiConsole.WriteLine(collection.ToString())
 

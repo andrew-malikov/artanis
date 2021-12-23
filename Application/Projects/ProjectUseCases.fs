@@ -9,11 +9,8 @@ open Domain.Projects.ProjectFiltersBuilder
 
 module ProjectUseCases =
     let getProjects fetchProjects mapProject collectionId : Async<Project list> =
-        async {
-            let! projects = fetchProjects collectionId
-
-            return projects |> List.map mapProject
-        }
+        fetchProjects collectionId
+        |> Async.map (List.map mapProject)
 
     let getProjectFilters filterOptions =
         result {

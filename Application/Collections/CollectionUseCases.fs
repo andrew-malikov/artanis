@@ -6,33 +6,26 @@ open Domain.Collections.CollectionEntity
 open Domain.Collections.CollectionFilters
 
 module CollectionUseCases =
-    let getMetadata fetchCollection mapCollection collectionId username : Async<CollectionMetadata> =
-        async {
-            let! collectionMetadata = fetchCollection collectionId username
+    type GetCollectionRequest = { collectionId: int; username: string }
 
-            return mapCollection collectionMetadata
-        }
+    let getMetadata fetchCollection mapCollection request : Async<CollectionMetadata> =
+        fetchCollection request.collectionId request.username
+        |> Async.map mapCollection
 
-    let getCollection getMetadata getProjects collectionId username =
+    let getCollection getMetadata getProjects request =
         async {
-            let! metadata = getMetadata collectionId username
-            let! projects = getProjects collectionId
+            let! metadata = getMetadata request
+            let! projects = getProjects request.collectionId
 
             return
                 { metadata = metadata
                   projects = projects }
         }
-        
+
     let getCollectionFilters getProjectFilters filterOptions =
-        result {
-            let! projectFilters = getProjectFilters filterOptions
-            
-            return filterCollection projectFilters
-        }
+        getProjectFilters filterOptions
+        |> Result.map filterCollection
 
-    let getFilteredCollection getCollection filterCollection collectionId username : Async<Collection option> =
-        async {
-            let! collection = getCollection collectionId username
-
-            return filterCollection collection
-        }
+    let getFilteredCollection getCollection filterCollection request : Async<Collection option> =
+        getCollection request
+        |> Async.map filterCollection
