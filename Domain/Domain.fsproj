@@ -15,6 +15,7 @@
     <Compile Include="Assets\AssetFiltersBuilder.fs" />
     <Compile Include="Projects\ProjectEntity.fs" />
     <Compile Include="Projects\ProjectFilters.fs" />
+    <Compile Include="Projects\ProjectFiltersBuilder.fs" />
     <Compile Include="Collections\CollectionEntity.fs" />
     <Compile Include="Collections\CollectionFilters.fs" />
   </ItemGroup>
