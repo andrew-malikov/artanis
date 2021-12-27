@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <Compile Include="Cli\Formatters.fs" />
-    <Compile Include="Collections\CollectionCommands.fs" />
+    <Compile Include="Collections\FetchCollectionCommand.fs" />
     <Compile Include="Startup.fs" />
   </ItemGroup>
 

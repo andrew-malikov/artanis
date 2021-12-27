@@ -15,13 +15,13 @@ open Application.Projects
 open Artstation.Collections
 open Artstation.Projects
 
-module CollectionCommands =
-    type FetchCollectionArgs =
+module FetchCollectionCommand =
+    type private Args =
         { collectionId: int
           username: string
           orientation: Orientation option }
 
-    type FetchCollectionSettings(collectionId, username, orientation) =
+    type Settings(collectionId, username, orientation) =
         inherit CommandSettings()
 
         [<Description("Collection id")>]
@@ -36,7 +36,7 @@ module CollectionCommands =
         [<CommandOption("-o|--orientation")>]
         member val orientation: string = orientation
 
-    let parseOrientation =
+    let private parseOrientation =
         function
         | "landscape" -> Some Orientation.Landscape |> Ok
         | "portrait" -> Some Orientation.Portrait |> Ok
@@ -48,7 +48,7 @@ module CollectionCommands =
             + " is defined but doesn't match to the available values."
             |> Error
 
-    let parseArgs (settings: FetchCollectionSettings) =
+    let private parseArgs (settings: Settings) =
         result {
             let! orientation = parseOrientation settings.orientation
 
@@ -58,8 +58,8 @@ module CollectionCommands =
                   orientation = orientation }
         }
 
-    type FetchCollectionCommand() =
-        inherit AsyncCommand<FetchCollectionSettings>()
+    type Command() =
+        inherit AsyncCommand<Settings>()
 
         override this.ExecuteAsync(context, settings) =
             let parsedArgs = parseArgs settings

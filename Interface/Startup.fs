@@ -2,7 +2,7 @@ namespace Interface
 
 open Spectre.Console.Cli
 
-open Interface.Collections.CollectionCommands
+open Interface.Collections
 
 module Startup =
     let application =
@@ -11,7 +11,7 @@ module Startup =
         cli.Configure
             (fun config ->
                 config
-                    .AddCommand<FetchCollectionCommand>("collection")
+                    .AddCommand<FetchCollectionCommand.Command>("collection")
                     .WithDescription("fetch the collection data")
                 |> ignore)
 
