@@ -3,6 +3,7 @@ namespace Interface.Collections
 open System.ComponentModel
 
 open System.Threading.Tasks
+open Domain.FilterOptions
 open FsToolkit.ErrorHandling
 
 open Spectre.Console
@@ -14,6 +15,7 @@ open Application.Collections
 open Application.Projects
 open Artstation.Collections
 open Artstation.Projects
+open Interface.FilterOptionsFactory
 
 module FetchCollectionCommand =
     type private Args =
@@ -58,20 +60,35 @@ module FetchCollectionCommand =
                   orientation = orientation }
         }
 
+    let private getOrientationFilterOption orientation =
+        { arg =
+              Option(
+                  orientation
+                  |> Option.bind
+                      (fun orientation ->
+                          Some
+                              { name = "orientation"
+                                value = orientation })
+              )
+          category = "assets"
+          name = "byOrientation" }
+
+
     type Command() =
         inherit AsyncCommand<Settings>()
 
         override this.ExecuteAsync(context, settings) =
-            let parsedArgs = parseArgs settings
+            let fetchingCollectionResult =
+                result {
+                    let! { collectionId = collectionId
+                           username = username
+                           orientation = orientation } = parseArgs settings
 
-            match parsedArgs with
-            | Ok args ->
-                let fetchRequest: CollectionUseCases.GetCollectionRequest =
-                    { collectionId = args.collectionId
-                      username = args.username }
+                    let! filterCollection =
+                        getFilterOptions [ getOrientationFilterOption orientation ]
+                        |> CollectionUseCases.getCollectionFilters ProjectUseCases.getProjectFilters
 
-                async {
-                    let! collection =
+                    let getCollection =
                         CollectionUseCases.getCollection
                             (CollectionUseCases.getMetadata
                                 CollectionApi.getCollection
@@ -79,8 +96,18 @@ module FetchCollectionCommand =
                             (ProjectUseCases.getProjects
                                 CollectionApi.getAllCollectionProjects
                                 ProjectFactory.getProject)
-                            fetchRequest
 
+                    return
+                        CollectionUseCases.getFilteredCollection getCollection filterCollection
+                        <| { collectionId = collectionId
+                             username = username }
+                }
+
+
+            match fetchingCollectionResult with
+            | Ok fetchingCollection ->
+                async {
+                    let! collection = fetchingCollection
                     AnsiConsole.WriteLine(collection.ToString())
 
                     return 0

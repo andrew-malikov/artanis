@@ -26,6 +26,6 @@ module CollectionUseCases =
         getProjectFilters filterOptions
         |> Result.map filterCollection
 
-    let getFilteredCollection getCollection filterCollection request : Async<Collection option> =
+    let getFilteredCollection getCollection filterCollection request : Async<Collection> =
         getCollection request
         |> Async.map filterCollection
