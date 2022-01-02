@@ -1,4 +1,4 @@
-namespace Domain
+namespace Application
 
 module FilterOptions =
     type FilterArgument = { name: string; value: obj }

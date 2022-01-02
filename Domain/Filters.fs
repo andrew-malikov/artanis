@@ -1,6 +1,18 @@
 namespace Domain
 
 module Filters =
+    [<CustomEquality; NoComparison>]
+    type 'item Filter =
+        { name: string
+          selector: 'item -> 'item option }
+
+        override this.Equals other =
+            match other with
+            | :? Filter<'item> as filter -> filter.name.Equals this.name
+            | _ -> false
+
+        override this.GetHashCode() = this.name.GetHashCode()
+
     let rec filterOne filters item =
         match filters with
         | [] -> Some item

@@ -3,6 +3,8 @@ namespace Domain.Collections
 open Domain.Projects.ProjectEntity
 
 module CollectionEntity =
+    type UserCollectionId = { collectionId: int; username: string }
+
     type CollectionMetadata =
         { id: int
           name: string

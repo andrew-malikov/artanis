@@ -2,6 +2,7 @@ namespace Artstation.Collections
 
 open Flurl.Http
 
+open Domain.Collections.CollectionEntity
 open Artstation.Api
 open Artstation.Projects.ProjectApi
 
@@ -20,12 +21,12 @@ module CollectionApi =
         { data: EmptyProjectResponse List
           totalCount: int }
 
-    let getCollection (id: int) (username: string) : Async<CollectionResponse> =
+    let getCollection userCollectionId : Async<CollectionResponse> =
         async {
             let! rawCollection =
                 BaseUrl()
-                    .AppendPathSegments("collections", $"{id}.json")
-                    .SetQueryParam("username", username)
+                    .AppendPathSegments("collections", $"{userCollectionId.collectionId}.json")
+                    .SetQueryParam("username", userCollectionId.username)
                     .GetStringAsync()
                 |> Async.AwaitTask
 

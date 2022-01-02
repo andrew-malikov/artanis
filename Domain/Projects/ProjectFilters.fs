@@ -4,9 +4,6 @@ open Domain.Filters
 open Domain.Projects.ProjectEntity
 
 module ProjectFilters =
-    let filterProject assetFilters project =
-        { project with
-              assets = filterMany assetFilters project.assets }
 
     let filterNotEmptyProject =
         function
@@ -22,3 +19,20 @@ module ProjectFilters =
                       assets =
                           [ project.assets
                             |> List.maxBy (fun asset -> asset.position) ] }
+
+    let filterProject projectFilters assetFilters project =
+        let filteredProject =
+            { project with
+                  assets =
+                      project.assets
+                      |> filterMany (
+                          assetFilters
+                          |> List.map (fun filter -> filter.selector)
+                      ) }
+
+        let projectFilters =
+            filterNotEmptyProject
+            :: (projectFilters
+                |> List.map (fun filter -> filter.selector))
+
+        filterOne projectFilters filteredProject

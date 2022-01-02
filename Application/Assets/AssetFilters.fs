@@ -1,44 +1,60 @@
-namespace Domain.Assets
+namespace Application.Assets
 
 open FsToolkit.ErrorHandling
 
-open Domain.FilterOptions
+open Domain.Filters
 open Domain.Assets.AssetEntity
 open Domain.Assets.AssetFilters
+open Application.FilterOptions
 
-module AssetFiltersBuilder =
+module AssetFilters =
     let private mapOptionToFilter option =
         match option.name with
         | "byType" ->
             result {
                 let! filterAssetType = getFilterArgumentValue<AssetType> "type" option.args
 
-                return Some(filterAssetByType filterAssetType)
+                return
+                    Some
+                        { name = "byType"
+                          selector = filterAssetByType filterAssetType }
             }
         | "byAspectRatio" ->
             result {
                 let! filterAspectRatio = getFilterArgumentValue<AspectRatio> "aspectRatio" option.args
 
-                return Some(filterAssetByAspectRation filterAspectRatio)
+                return
+                    Some
+                        { name = "byAspectRatio"
+                          selector = filterAssetByAspectRation filterAspectRatio }
             }
         | "bySize" ->
             result {
                 let! filterComparator = getFilterArgumentValue<Size -> Size -> bool> "comparator" option.args
                 let! filterSize = getFilterArgumentValue<Size> "size" option.args
 
-                return Some(filterAssetBySize filterComparator filterSize)
+                return
+                    Some
+                        { name = "bySize"
+                          selector = filterAssetBySize filterComparator filterSize }
             }
         | "byEqualSize" ->
             result {
                 let! filterSize = getFilterArgumentValue<Size> "size" option.args
 
-                return Some(filterAssetByEqualSize filterSize)
+                return
+                    Some
+                        { selector = filterAssetByEqualSize filterSize
+                          name = "byEqualSize" }
             }
         | "byOrientation" ->
             result {
                 let! filterOrientation = getFilterArgumentValue<Orientation> "orientation" option.args
 
-                return Some(filterAssetByOrientation filterOrientation)
+                return
+                    Some
+                        { selector = filterAssetByOrientation filterOrientation
+                          name = "byOrientation" }
             }
         | _ -> Ok None
 

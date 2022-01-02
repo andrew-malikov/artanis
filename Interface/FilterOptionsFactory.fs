@@ -1,6 +1,6 @@
 namespace Interface
 
-open Domain.FilterOptions
+open Application.FilterOptions
 
 module FilterOptionsFactory =
     type FilterOptionType =

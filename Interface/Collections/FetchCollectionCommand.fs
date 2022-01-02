@@ -1,21 +1,20 @@
 namespace Interface.Collections
 
 open System.ComponentModel
-
 open System.Threading.Tasks
-open Domain.FilterOptions
+
 open FsToolkit.ErrorHandling
 
 open Spectre.Console
 open Spectre.Console.Cli
 
-open Interface.Cli.Formatters
 open Domain.Assets.AssetEntity
 open Application.Collections
 open Application.Projects
 open Artstation.Collections
 open Artstation.Projects
 open Interface.FilterOptionsFactory
+open Interface.Cli.Formatters
 
 module FetchCollectionCommand =
     type private Args =
@@ -78,31 +77,24 @@ module FetchCollectionCommand =
         inherit AsyncCommand<Settings>()
 
         override this.ExecuteAsync(context, settings) =
+            let getCollection =
+                CollectionService.getCollection
+                    (CollectionService.getMetadata CollectionApi.getCollection CollectionFactory.getCollectionMetadata)
+                    (ProjectService.getProjects CollectionApi.getAllCollectionProjects ProjectFactory.getProject)
+
             let fetchingCollectionResult =
                 result {
                     let! { collectionId = collectionId
                            username = username
                            orientation = orientation } = parseArgs settings
 
-                    let! filterCollection =
-                        getFilterOptions [ getOrientationFilterOption orientation ]
-                        |> CollectionUseCases.getCollectionFilters ProjectUseCases.getProjectFilters
-
-                    let getCollection =
-                        CollectionUseCases.getCollection
-                            (CollectionUseCases.getMetadata
-                                CollectionApi.getCollection
-                                CollectionFactory.getCollectionMetadata)
-                            (ProjectUseCases.getProjects
-                                CollectionApi.getAllCollectionProjects
-                                ProjectFactory.getProject)
-
-                    return
-                        CollectionUseCases.getFilteredCollection getCollection filterCollection
+                    return!
+                        CollectionService.getFilteredCollection
+                            getCollection
+                            (getFilterOptions [ getOrientationFilterOption orientation ])
                         <| { collectionId = collectionId
                              username = username }
                 }
-
 
             match fetchingCollectionResult with
             | Ok fetchingCollection ->
