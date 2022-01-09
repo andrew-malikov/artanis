@@ -11,7 +11,7 @@ module CollectionFilters =
         { assetFilters: Asset Filter list
           projectFilters: Project Filter list }
 
-    let filterCollection filters collection =
+    let applyFilters filters collection =
         let projectFilter =
             filterProject filters.projectFilters filters.assetFilters
 

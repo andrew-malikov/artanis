@@ -15,7 +15,6 @@
     <Compile Include="Projects\ProjectFilters.fs" />
     <Compile Include="Collections\CollectionEntity.fs" />
     <Compile Include="Collections\CollectionFilters.fs" />
-    <Compile Include="Collections\CollectionUseCases.fs" />
   </ItemGroup>
 
   <ItemGroup>

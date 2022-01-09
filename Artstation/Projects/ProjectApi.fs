@@ -2,10 +2,13 @@ namespace Artstation.Projects
 
 open System
 
+open FsToolkit.ErrorHandling
+
 open Flurl.Http
 
+open Domain.Projects.ProjectEntity
 open Artstation.Api
-open Artstation.Assets.AssetFactory
+open Artstation.Assets.AssetApi
 
 module ProjectApi =
     type SoftwareItemResponse = { iconUrl: string; name: string }
@@ -79,16 +82,34 @@ module ProjectApi =
           visible: bool
           visibleOnArtstation: bool }
 
-    let getProject (id: int) : Async<ProjectResponse> =
-        async {
-            let! rawProject =
-                BaseUrl()
-                    .AppendPathSegments("projects", $"{id}.json")
-                    .GetStringAsync()
-                |> Async.AwaitTask
+    let private toProject (projectResponse: ProjectResponse) =
+        { assets =
+              projectResponse.assets
+              |> List.map toAsset
+              |> List.choose id
+          categories =
+              projectResponse.categories
+              |> List.map
+                  (fun category ->
+                      {| id = category.id
+                         name = category.name |})
+          createdAt = projectResponse.createdAt
+          description = projectResponse.description
+          hashId = projectResponse.hashId
+          id = projectResponse.id
+          permalink = projectResponse.permalink
+          publishedAt = projectResponse.publishedAt
+          tags = projectResponse.tags
+          title = projectResponse.title
+          updatedAt = projectResponse.updatedAt
+          userId = projectResponse.userId }
 
-            return parseJson rawProject
-        }
+    let getProject (id: int) =
+        BaseUrl()
+            .AppendPathSegments("projects", $"{id}.json")
+            .GetStringAsync()
+        |> Async.AwaitTask
+        |> Async.map (parseJson >> toProject)
 
     let rec getProjects (ids: int list) =
         match ids with

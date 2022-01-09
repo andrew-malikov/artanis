@@ -2,6 +2,8 @@ namespace Artstation.Collections
 
 open Flurl.Http
 
+open FsToolkit.ErrorHandling
+
 open Domain.Collections.CollectionEntity
 open Artstation.Api
 open Artstation.Projects.ProjectApi
@@ -21,19 +23,21 @@ module CollectionApi =
         { data: EmptyProjectResponse List
           totalCount: int }
 
-    let getCollection userCollectionId : Async<CollectionResponse> =
-        async {
-            let! rawCollection =
-                BaseUrl()
-                    .AppendPathSegments("collections", $"{userCollectionId.collectionId}.json")
-                    .SetQueryParam("username", userCollectionId.username)
-                    .GetStringAsync()
-                |> Async.AwaitTask
+    let private toCollectionMetadata (collectionResponse: CollectionResponse) =
+        { id = collectionResponse.id
+          name = collectionResponse.name
+          projectsCount = collectionResponse.projectsCount
+          userId = collectionResponse.userId }
 
-            return parseJson rawCollection
-        }
+    let getCollectionMetadata userCollectionId =
+        BaseUrl()
+            .AppendPathSegments("collections", $"{userCollectionId.collectionId}.json")
+            .SetQueryParam("username", userCollectionId.username)
+            .GetStringAsync()
+        |> Async.AwaitTask
+        |> Async.map (parseJson >> toCollectionMetadata)
 
-    let getCollectionProjects (id: int) (page: int) : Async<CollectionProjectPageResponse> =
+    let private getCollectionProjects (id: int) (page: int) : Async<CollectionProjectPageResponse> =
         async {
             let! rawCollectionProjects =
                 BaseUrl()

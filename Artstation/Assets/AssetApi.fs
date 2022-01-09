@@ -1,8 +1,12 @@
 namespace Artstation.Assets
 
+open FsToolkit.ErrorHandling
+
+open Flurl.Http
+
 open Domain.Assets.AssetEntity
 
-module AssetFactory =
+module AssetApi =
     type AssetResponse =
         { assetType: string
           hasEmbeddedPlayer: bool
@@ -22,8 +26,8 @@ module AssetFactory =
         | "video" -> Some Video
         | "cover" -> Some Cover
         | _ -> None
-    
-    let getAsset assetResponse =
+
+    let toAsset assetResponse =
         getAssetType assetResponse.assetType
         |> Option.bind
             (fun assetType ->
@@ -38,3 +42,8 @@ module AssetFactory =
                       titleFormatted = assetResponse.titleFormatted
                       viewportConstraintType = assetResponse.viewportConstraintType
                       width = assetResponse.width })
+
+    let fetchAsset (asset: Asset) =
+        asset.imageUrl.GetBytesAsync()
+        |> Async.AwaitTask
+        |> Async.map (fun content -> { asset = asset; content = content })

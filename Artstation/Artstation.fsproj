@@ -7,11 +7,9 @@
 
   <ItemGroup>
     <Compile Include="Api.fs" />
-    <Compile Include="Assets\AssetFactory.fs" />
+    <Compile Include="Assets\AssetApi.fs" />
     <Compile Include="Projects\ProjectApi.fs" />
-    <Compile Include="Projects\ProjectFactory.fs" />
     <Compile Include="Collections\CollectionApi.fs" />
-    <Compile Include="Collections\CollectionFactory.fs" />
   </ItemGroup>
 
   <ItemGroup>

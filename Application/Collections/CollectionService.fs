@@ -3,14 +3,11 @@ namespace Application.Collections
 open FsToolkit.ErrorHandling
 
 open Domain.Collections.CollectionEntity
-open Domain.Collections.CollectionUseCases
+open Domain.Collections.CollectionFilters
 open Application.Assets.AssetFilters
 open Application.Projects.ProjectFilters
 
 module CollectionService =
-    let getMetadata fetchCollection mapCollection request : Async<CollectionMetadata> =
-        fetchCollection request |> Async.map mapCollection
-
     let getCollection getMetadata getProjects request =
         async {
             let! metadata = getMetadata request
@@ -23,14 +20,14 @@ module CollectionService =
 
     let getFilteredCollection getCollection filterOptions collectionId =
         result {
-            let! assetFilters = buildAssetFilters filterOptions
-            let projectFilters = buildProjectFilters filterOptions
+            let! filters =
+                buildAssetFilters filterOptions
+                |> Result.map
+                    (fun assetFilters ->
+                        { assetFilters = assetFilters
+                          projectFilters = buildProjectFilters filterOptions })
 
             return
-                getFilteredCollection
-                    getCollection
-                    { userCollectionId = collectionId
-                      filters =
-                          { assetFilters = assetFilters
-                            projectFilters = projectFilters } }
+                getCollection collectionId
+                |> Async.map (applyFilters filters)
         }

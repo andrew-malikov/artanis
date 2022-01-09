@@ -9,7 +9,6 @@
   <ItemGroup>
     <Compile Include="FilterOptions.fs" />
     <Compile Include="Assets\AssetFilters.fs" />
-    <Compile Include="Projects\ProjectService.fs" />
     <Compile Include="Projects\ProjectFilters.fs" />
     <Compile Include="Collections\CollectionService.fs" />
   </ItemGroup>

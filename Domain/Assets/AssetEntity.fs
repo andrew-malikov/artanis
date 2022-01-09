@@ -26,3 +26,9 @@ module AssetEntity =
           titleFormatted: string
           viewportConstraintType: string
           width: int }
+        
+    type FulfilledAsset =
+        {
+            asset: Asset
+            content: byte[]
+        }
