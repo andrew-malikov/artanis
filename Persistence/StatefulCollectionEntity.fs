@@ -4,6 +4,7 @@ open System
 
 open Domain.Assets.AssetEntity
 open Domain.Collections.CollectionEntity
+open Domain.Projects.ProjectEntity
 
 module StatefulCollectionEntity =
     type PersistingStatus =
@@ -23,6 +24,19 @@ module StatefulCollectionEntity =
           titleFormatted: string
           viewportConstraintType: string
           width: int }
+
+    let private toStatefulAsset (asset: Asset) =
+        { assetType = asset.assetType
+          hasImage = asset.hasImage
+          height = asset.height
+          id = asset.id
+          imageUrl = asset.imageUrl
+          position = asset.position
+          title = asset.title
+          titleFormatted = asset.titleFormatted
+          viewportConstraintType = asset.viewportConstraintType
+          width = asset.width
+          status = Unprocessed }
 
     let private markStatefulAsset status asset = { asset with status = status }
 
@@ -56,6 +70,28 @@ module StatefulCollectionEntity =
           title: string
           updatedAt: DateTime
           userId: int }
+
+    let private toStatefulProject (project: Project) =
+        let categories =
+            project.categories
+            |> List.map
+                (fun category ->
+                    {| name = category.name
+                       id = category.id |})
+
+        { assets = List.map toStatefulAsset project.assets
+          categories = categories
+          createdAt = project.createdAt
+          description = project.description
+          status = Unprocessed
+          hashId = project.hashId
+          id = project.id
+          permalink = project.permalink
+          publishedAt = project.publishedAt
+          tags = project.tags
+          title = project.title
+          updatedAt = project.updatedAt
+          userId = project.userId }
 
     let private markStatefulProjectAsset status assetId project =
         let unchangedAssets =
@@ -106,6 +142,11 @@ module StatefulCollectionEntity =
         { metadata: CollectionMetadata
           projects: StatefulProject list
           status: PersistingStatus }
+
+    let toStatefulCollection (collection: Collection) =
+        { metadata = collection.metadata
+          projects = List.map toStatefulProject collection.projects
+          status = Unprocessed }
 
     let markStatefulCollectionAsset collection projectId assetId status =
         let unchangedProjects =
