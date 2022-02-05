@@ -26,9 +26,29 @@ module AssetEntity =
           titleFormatted: string
           viewportConstraintType: string
           width: int }
-        
+
     type FulfilledAsset =
-        {
-            asset: Asset
-            content: byte[]
-        }
+        { assetType: AssetType
+          content: byte []
+          hasImage: bool
+          height: int
+          id: int
+          imageUrl: string
+          position: int
+          title: string option
+          titleFormatted: string
+          viewportConstraintType: string
+          width: int }
+
+    let toFulfilledAsset (asset: Asset) content =
+        { assetType = asset.assetType
+          content = content
+          hasImage = asset.hasImage
+          height = asset.height
+          id = asset.id
+          imageUrl = asset.imageUrl
+          position = asset.position
+          title = asset.title
+          titleFormatted = asset.titleFormatted
+          viewportConstraintType = asset.viewportConstraintType
+          width = asset.width }

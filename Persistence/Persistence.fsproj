@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <Compile Include="StatefulCollectionEntity.fs" />
+        <Compile Include="LocalAssetPersistenceService.fs" />
     </ItemGroup>
 
     <ItemGroup>

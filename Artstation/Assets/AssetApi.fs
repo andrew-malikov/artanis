@@ -46,4 +46,4 @@ module AssetApi =
     let fetchAsset (asset: Asset) =
         asset.imageUrl.GetBytesAsync()
         |> Async.AwaitTask
-        |> Async.map (fun content -> { asset = asset; content = content })
+        |> Async.map (fun content -> toFulfilledAsset asset content)

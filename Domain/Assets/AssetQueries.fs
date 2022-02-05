@@ -3,7 +3,7 @@ namespace Domain.Assets
 open Domain.Assets.AssetEntity
 
 module AssetQueries =
-    let getAssetSize asset =
+    let getAssetSize (asset: Asset) =
         { width = asset.width
           height = asset.height }
 
@@ -14,7 +14,7 @@ module AssetQueries =
         | a, b when b > a -> gcd (b - a, a)
         | _ -> None
 
-    let getAssetAspectRatio asset : AspectRatio Option =
+    let getAssetAspectRatio (asset: Asset) : AspectRatio Option =
         gcd (asset.width, asset.height)
         |> Option.bind
             (fun divisor ->
@@ -22,7 +22,7 @@ module AssetQueries =
                     { width = asset.width / divisor
                       height = asset.height / divisor })
 
-    let getAssetOrientation asset =
+    let getAssetOrientation (asset: Asset) =
         getAssetAspectRatio asset
         |> Option.bind
             (function

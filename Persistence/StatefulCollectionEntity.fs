@@ -38,23 +38,32 @@ module StatefulCollectionEntity =
           width = asset.width
           status = Unprocessed }
 
+    let toAsset statefulAsset =
+        { assetType = statefulAsset.assetType
+          hasImage = statefulAsset.hasImage
+          height = statefulAsset.height
+          id = statefulAsset.id
+          imageUrl = statefulAsset.imageUrl
+          position = statefulAsset.position
+          title = statefulAsset.title
+          titleFormatted = statefulAsset.titleFormatted
+          viewportConstraintType = statefulAsset.viewportConstraintType
+          width = statefulAsset.width }
+
     let private markStatefulAsset status asset = { asset with status = status }
 
+    let private containAssetsStatus assets status =
+        List.exists (fun asset -> asset.status = status) assets
+
     let private getAssetsStatus assets =
-        let allPersisted =
-            List.forall (fun (asset: StatefulAsset) -> asset.status = Persisted) assets
+        let somePersisted = containAssetsStatus assets Persisted
+        let someUnprocessed = containAssetsStatus assets Unprocessed
+        let somePersisting = containAssetsStatus assets Persisting
 
-        let allUnprocessed =
-            List.forall (fun (asset: StatefulAsset) -> asset.status = Unprocessed) assets
-
-        let somePersisting =
-            List.exists (fun (asset: StatefulAsset) -> asset.status = Persisting) assets
-
-        match (allPersisted, allUnprocessed, somePersisting) with
-        | true, _, _ -> Persisted
-        | _, true, _ -> Unprocessed
-        | _, _, true -> Persisting
-        | _ -> failwith "Invalid state"
+        match (somePersisted, someUnprocessed, somePersisting) with
+        | true, false, false -> Persisted
+        | false, true, false -> Unprocessed
+        | _ -> Persisting
 
     type StatefulProject =
         { assets: StatefulAsset list
@@ -83,7 +92,10 @@ module StatefulCollectionEntity =
           categories = categories
           createdAt = project.createdAt
           description = project.description
-          status = Unprocessed
+          status =
+              match project.assets with
+              | [] -> Persisted
+              | _ -> Unprocessed
           hashId = project.hashId
           id = project.id
           permalink = project.permalink
@@ -122,21 +134,22 @@ module StatefulCollectionEntity =
                       status = Persisting }
         | None -> project
 
-    let private getProjectsStatus projects =
-        let allPersisted =
-            List.forall (fun project -> project.status = Persisted) projects
+    let private containProjectsStatus projects status =
+        List.exists (fun project -> project.status = status) projects
 
-        let allUnprocessed =
-            List.forall (fun project -> project.status = Unprocessed) projects
+    let private getProjectsStatus projects =
+        let somePersisted = containProjectsStatus projects Persisted
+
+        let someUnprocessed =
+            containProjectsStatus projects Unprocessed
 
         let somePersisting =
-            List.exists (fun project -> project.status = Persisting) projects
+            containProjectsStatus projects Persisting
 
-        match (allPersisted, allUnprocessed, somePersisting) with
-        | true, _, _ -> Persisted
-        | _, true, _ -> Unprocessed
-        | _, _, true -> Persisting
-        | _ -> failwith "Invalid state"
+        match (somePersisted, someUnprocessed, somePersisting) with
+        | true, false, false -> Persisted
+        | false, true, false -> Unprocessed
+        | _ -> Persisting
 
     type StatefulCollection =
         { metadata: CollectionMetadata
@@ -146,7 +159,10 @@ module StatefulCollectionEntity =
     let toStatefulCollection (collection: Collection) =
         { metadata = collection.metadata
           projects = List.map toStatefulProject collection.projects
-          status = Unprocessed }
+          status =
+              match collection.projects with
+              | [] -> Persisted
+              | _ -> Unprocessed }
 
     let markStatefulCollectionAsset collection projectId assetId status =
         let unchangedProjects =
