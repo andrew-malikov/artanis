@@ -3,7 +3,7 @@ namespace Interface
 open Spectre.Console.Cli
 
 open Interface.Collections
-
+open Interface.Commands
 module Startup =
     let application =
         let cli = CommandApp()
@@ -18,7 +18,7 @@ module Startup =
                 |> ignore
 
                 config
-                    .AddCommand<FetchCollectionAssetsCommand.Command>("collection-assets")
+                    .AddCommand<FetchCollectionAssets.Command.Handler>("collection-assets")
                     .WithDescription("fetch collection assets")
                 |> ignore)
 

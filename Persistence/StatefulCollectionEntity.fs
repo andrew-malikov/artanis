@@ -7,6 +7,8 @@ open Domain.Collections.CollectionEntity
 open Domain.Projects.ProjectEntity
 
 module StatefulCollectionEntity =
+    
+    // TODO: add a failure branch to handle it later
     type PersistingStatus =
         | Unprocessed
         | Persisting

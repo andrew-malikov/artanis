@@ -1,15 +1,10 @@
-namespace Interface.Collections
-
-open System.ComponentModel
-open System.Threading.Tasks
+namespace Interface.Commands.FetchCollectionAssets
 
 open Akka.Routing
-open Artstation.Assets
 open FsToolkit.ErrorHandling
 
 open Microsoft.FSharp.Control
 open Spectre.Console
-open Spectre.Console.Cli
 
 open Akka.FSharp
 
@@ -17,31 +12,39 @@ open Domain.Assets.AssetEntity
 open Domain.Collections.CollectionEntity
 open Application.Collections.CollectionService
 open Artstation.Collections.CollectionApi
+open Artstation.Assets
 open Persistence.StatefulCollectionEntity
 open Persistence.LocalAssetPersistenceService
 open Interface.Collections.FetchCollectionArgs
 open Interface.FilterOptionsFactory
-open Interface.Cli.Formatters
 
-// TODO: Separate actors by different modules
-//       move out the logic to fetch collection to an actor
-//       keep only the code to run the actor system within Spectre CLI
-module FetchCollectionAssetsCommand =
+// TODO: put the actor system along with actors
+//       and export only a function to run the system
+module Actors =
     let actorSystem =
-        System.create "FetchCollectionAsset" (Configuration.load ())
+        System.create "FetchCollectionAssets" (Configuration.load ())
+
+    type FetchCollectionAssetsRequest =
+        { collectionId: int
+          username: string
+          orientation: Orientation option
+          outputDirectory: string }
 
     type CollectionAsset =
         { asset: StatefulAsset
           collectionId: int
           projectId: int }
-    
-    // TODO: adjust events to have error cases 
+
+    // TODO: adjust events to have error cases
+    //       as well as events related to fetching collection metadata
     type Event =
         | PersistedAsset of CollectionAsset
         | PersistAsset of CollectionAsset
         | PersistingAsset of CollectionAsset
         | PersistCollection of Collection
         | PersistedCollection of StatefulCollection
+        | FetchingCollection of UserCollectionId
+        | FetchCollection of FetchCollectionAssetsRequest
 
     let displayActor (displayContext: StatusContext) (mailbox: Actor<Event>) =
         let rec loop () =
@@ -49,11 +52,16 @@ module FetchCollectionAssetsCommand =
                 let! event = mailbox.Receive()
 
                 match event with
+                | FetchingCollection userCollectionId ->
+                    StatusContextExtensions.Status(displayContext, $"Fetching collection: {userCollectionId.collectionId}")
+                    |> ignore
+                    
+                    AnsiConsole.MarkupLine $"Fetching collection: {userCollectionId.collectionId}"
                 | PersistCollection collection ->
-                    displayContext.Status = $"Persisting collection: {collection.metadata.id}"
+                    StatusContextExtensions.Status(displayContext, $"Persisting collection: {collection.metadata.id}")
                     |> ignore
                 | PersistedCollection statefulCollection ->
-                    displayContext.Status = $"Persisted collection: {statefulCollection.metadata.id}"
+                    StatusContextExtensions.Status(displayContext, $"Persisted collection: {statefulCollection.metadata.id}")
                     |> ignore
 
                     AnsiConsole.MarkupLine $"Persisted collection: {statefulCollection.metadata.id}"
@@ -68,7 +76,7 @@ module FetchCollectionAssetsCommand =
 
         loop ()
 
-    let persistActor output (mailbox: Actor<Event>) =
+    let assetActor output (mailbox: Actor<Event>) =
         let rec loop () =
             actor {
                 let! event = mailbox.Receive()
@@ -96,7 +104,8 @@ module FetchCollectionAssetsCommand =
 
     type CollectionActorState = { collection: StatefulCollection }
 
-    let collectionActor displayActor persistActor (mailbox: Actor<Event>) =
+    // TODO: move out inner functions to the higher level as state functions
+    let collectionAssetsActor displayActor assetActor (mailbox: Actor<Event>) =
         let rec loop (state: CollectionActorState option) =
             actor {
                 let! event = mailbox.Receive()
@@ -130,7 +139,7 @@ module FetchCollectionAssetsCommand =
                                 project.assets
                                 |> List.iter
                                     (fun asset ->
-                                        persistActor
+                                        assetActor
                                         <! PersistAsset
                                             { asset = asset
                                               collectionId = collection.metadata.id
@@ -185,94 +194,57 @@ module FetchCollectionAssetsCommand =
 
         loop None
 
-    let runCollectionActorSystem output collection =
-        AnsiConsole
-            .Status()
-            .Start(
-                "Fetching collection",
-                fun context ->
-                    let displayActorRef =
-                        spawn actorSystem "Display" (displayActor context)
+    let collectionActor displayActor collectionAssetsActor (mailbox: Actor<Event>) =
+        let rec loop () =
+            actor {
+                let! event = mailbox.Receive()
 
-                    let persistActorRef =
-                        spawnOpt actorSystem "Persist" (persistActor output) [ SpawnOption.Router(RoundRobinPool(3)) ]
-
-                    let collectionActorRef =
-                        spawn actorSystem "Collection" (collectionActor displayActorRef persistActorRef)
-
-                    collectionActorRef <! PersistCollection collection
-
-                    actorSystem.WhenTerminated
-                    |> Async.AwaitTask
-                    |> Async.RunSynchronously
-            )
-
-    type private Args =
-        { collectionId: int
-          username: string
-          output: string
-          orientation: Orientation option }
-
-    type Settings(collectionId, username, output, orientation) =
-        inherit CommandSettings()
-
-        [<Description("Collection id")>]
-        [<CommandArgument(0, "<collectionId>")>]
-        member val collectionId: int = collectionId
-
-        [<Description("Collection account username")>]
-        [<CommandArgument(1, "<username>")>]
-        member val username: string = username
-
-        [<Description("Output directory")>]
-        [<CommandArgument(2, "<output>")>]
-        member val output: string = output
-
-        [<Description("Assets orientation like 'landscape' 'portrait' or 'square'")>]
-        [<CommandOption("-o|--orientation")>]
-        member val orientation: string = orientation
-
-    // TODO: adjust the model due to the new output argument
-    let private parseArgs (settings: Settings) =
-        result {
-            let! orientation = parseOrientation settings.orientation
-
-            return
-                { collectionId = settings.collectionId
-                  username = settings.username
-                  output = settings.output
-                  orientation = orientation }
-        }
-
-    type Command() =
-        inherit AsyncCommand<Settings>()
-
-        override this.ExecuteAsync(context, settings) =
-            let fetchingCollectionResult =
-                result {
-                    let! { collectionId = collectionId
-                           username = username
-                           orientation = orientation } = parseArgs settings
+                match event with
+                | FetchCollection { collectionId = collectionId
+                                    username = username
+                                    orientation = orientation } ->
 
                     let collectionId: UserCollectionId =
                         { collectionId = collectionId
                           username = username }
 
-                    return!
+                    displayActor <! FetchingCollection collectionId
+
+                    let fetchingCollectionResult =
                         getFilteredCollection
                             (getCollection getCollectionMetadata getAllCollectionProjects)
                             (getFilterOptions [ getOrientationFilterOption orientation ])
                             collectionId
-                }
-            
-            // TODO: restructure the interaction with console via Spectre
-            //       it is possible to have a deadlock based on the Status widget
-            match fetchingCollectionResult with
-            | Ok fetchingCollection ->
-                fetchingCollection
-                |> Async.map (runCollectionActorSystem settings.output)
-                |> Async.map (fun _ -> 0)
-                |> Async.StartAsTask
-            | Error message ->
-                AnsiConsole.Markup(formatError message)
-                Task.FromResult -1
+
+                    // TODO: handle the error branch
+                    match fetchingCollectionResult with
+                    | Ok collection ->
+                        collectionAssetsActor
+                        <! PersistCollection(collection |> Async.RunSynchronously)
+                    | _ -> ()
+                | _ -> ()
+
+                return! loop ()
+            }
+
+        loop ()
+
+    let runCollectionActorSystem (displayContext: StatusContext) request =
+        let displayActorRef =
+            spawn actorSystem "Display" (displayActor displayContext)
+
+        // TODO: provide the count as a parameter
+        let assetActorRef =
+            spawnOpt actorSystem "Asset" (assetActor request.outputDirectory) [ SpawnOption.Router(RoundRobinPool(3)) ]
+
+        let collectionAssetsActorRef =
+            spawn actorSystem "CollectionAssets" (collectionAssetsActor displayActorRef assetActorRef)
+
+        let collectionActorRef =
+            spawn actorSystem "Collection" (collectionActor displayActorRef collectionAssetsActorRef)
+
+        collectionActorRef <! FetchCollection request
+
+        actorSystem.WhenTerminated
+        |> Async.AwaitTask
+        |> Async.RunSynchronously
