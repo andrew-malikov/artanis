@@ -29,3 +29,28 @@ module FetchCollectionArgs =
               )
           category = "assets"
           name = "byOrientation" }
+
+    let parseAssetType =
+        function
+        | "image" -> Some AssetType.Image |> Ok
+        | "video" -> Some AssetType.Video |> Ok
+        | "cover" -> Some AssetType.Cover |> Ok
+        | null -> Ok None
+        | _ ->
+            "Option "
+            + formatOption "'type'"
+            + " is defined but doesn't match to the available values."
+            |> Error
+    
+    let getAssetTypeFilterOption (assetType: AssetType option) =
+        { arg =
+              Option(
+                  assetType
+                  |> Option.bind
+                      (fun assetType ->
+                          Some
+                              { name = "type"
+                                value = assetType })
+              )
+          category = "assets"
+          name = "byType" }

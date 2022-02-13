@@ -1,5 +1,6 @@
 namespace Artstation.Assets
 
+open System.Text.RegularExpressions
 open FsToolkit.ErrorHandling
 
 open Flurl.Http
@@ -20,6 +21,7 @@ module AssetApi =
           viewportConstraintType: string
           width: int }
 
+    // TODO: map the else to Other
     let getAssetType =
         function
         | "image" -> Some Image
@@ -27,11 +29,19 @@ module AssetApi =
         | "cover" -> Some Cover
         | _ -> None
 
+    let private assetExtensionExpression = Regex @"\.(\w+)\?\d+"
+
+    let private getAssetExtension (asset: UnverifiedAsset) =
+        assetExtensionExpression.Matches asset.imageUrl
+        |> Seq.filter (fun (entry: Match) -> entry.Groups.Count = 2)
+        |> Seq.tryHead
+        |> Option.bind (fun entry -> entry.Groups.Item(1).Value |> Some)
+
     let toAsset assetResponse =
-        getAssetType assetResponse.assetType
-        |> Option.bind
-            (fun assetType ->
-                Some
+        let unverifiedAsset =
+            getAssetType assetResponse.assetType
+            |> Option.map
+                (fun assetType ->
                     { assetType = assetType
                       hasImage = assetResponse.hasImage
                       height = assetResponse.height
@@ -42,6 +52,12 @@ module AssetApi =
                       titleFormatted = assetResponse.titleFormatted
                       viewportConstraintType = assetResponse.viewportConstraintType
                       width = assetResponse.width })
+
+        let extension =
+            unverifiedAsset |> Option.bind getAssetExtension
+
+        Option.map2 verifyAsset unverifiedAsset extension
+        |> Option.flatten
 
     let fetchAsset (asset: Asset) =
         asset.imageUrl.GetBytesAsync()

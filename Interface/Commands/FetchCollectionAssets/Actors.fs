@@ -28,6 +28,7 @@ module Actors =
         { collectionId: int
           username: string
           orientation: Orientation option
+          assetType: AssetType option
           outputDirectory: string }
 
     type CollectionAsset =
@@ -53,15 +54,21 @@ module Actors =
 
                 match event with
                 | FetchingCollection userCollectionId ->
-                    StatusContextExtensions.Status(displayContext, $"Fetching collection: {userCollectionId.collectionId}")
+                    StatusContextExtensions.Status(
+                        displayContext,
+                        $"Fetching collection: {userCollectionId.collectionId}"
+                    )
                     |> ignore
-                    
+
                     AnsiConsole.MarkupLine $"Fetching collection: {userCollectionId.collectionId}"
                 | PersistCollection collection ->
                     StatusContextExtensions.Status(displayContext, $"Persisting collection: {collection.metadata.id}")
                     |> ignore
                 | PersistedCollection statefulCollection ->
-                    StatusContextExtensions.Status(displayContext, $"Persisted collection: {statefulCollection.metadata.id}")
+                    StatusContextExtensions.Status(
+                        displayContext,
+                        $"Persisted collection: {statefulCollection.metadata.id}"
+                    )
                     |> ignore
 
                     AnsiConsole.MarkupLine $"Persisted collection: {statefulCollection.metadata.id}"
@@ -202,7 +209,8 @@ module Actors =
                 match event with
                 | FetchCollection { collectionId = collectionId
                                     username = username
-                                    orientation = orientation } ->
+                                    orientation = orientation
+                                    assetType = assetType } ->
 
                     let collectionId: UserCollectionId =
                         { collectionId = collectionId
@@ -213,7 +221,8 @@ module Actors =
                     let fetchingCollectionResult =
                         getFilteredCollection
                             (getCollection getCollectionMetadata getAllCollectionProjects)
-                            (getFilterOptions [ getOrientationFilterOption orientation ])
+                            (getFilterOptions [ getOrientationFilterOption orientation
+                                                getAssetTypeFilterOption assetType ])
                             collectionId
 
                     // TODO: handle the error branch

@@ -1,5 +1,6 @@
 namespace Domain.Assets
 
+open System.Text.RegularExpressions
 open Domain.Assets.AssetEntity
 
 module AssetQueries =
@@ -29,3 +30,4 @@ module AssetQueries =
             | { width = width; height = height } when width > height -> Some Landscape
             | { width = width; height = height } when width < height -> Some Portrait
             | _ -> Some Square)
+

@@ -7,7 +7,6 @@ open Domain.Collections.CollectionEntity
 open Domain.Projects.ProjectEntity
 
 module StatefulCollectionEntity =
-    
     // TODO: add a failure branch to handle it later
     type PersistingStatus =
         | Unprocessed
@@ -16,6 +15,7 @@ module StatefulCollectionEntity =
 
     type StatefulAsset =
         { assetType: AssetType
+          extension: string
           status: PersistingStatus
           hasImage: bool
           height: int
@@ -29,6 +29,7 @@ module StatefulCollectionEntity =
 
     let private toStatefulAsset (asset: Asset) =
         { assetType = asset.assetType
+          extension = asset.extension
           hasImage = asset.hasImage
           height = asset.height
           id = asset.id
@@ -42,6 +43,7 @@ module StatefulCollectionEntity =
 
     let toAsset statefulAsset =
         { assetType = statefulAsset.assetType
+          extension = statefulAsset.extension
           hasImage = statefulAsset.hasImage
           height = statefulAsset.height
           id = statefulAsset.id

@@ -20,9 +20,10 @@ module Command =
         { collectionId: int
           username: string
           output: string
+          assetType: AssetType option
           orientation: Orientation option }
 
-    type Settings(collectionId, username, output, orientation) =
+    type Settings(collectionId, username, output, orientation, assetType) =
         inherit CommandSettings()
 
         [<Description("Collection id")>]
@@ -41,15 +42,21 @@ module Command =
         [<CommandOption("-o|--orientation")>]
         member val orientation: string = orientation
 
+        [<Description("Assets type like 'image', 'video' or 'cover'")>]
+        [<CommandOption("-t|--type")>]
+        member val assetType: string = assetType
+
     // TODO: adjust the model due to the new output argument
     let private parseArgs (settings: Settings) =
         result {
             let! orientation = parseOrientation settings.orientation
+            let! assetType = parseAssetType settings.assetType
 
             return
                 { collectionId = settings.collectionId
                   username = settings.username
                   output = settings.output
+                  assetType = assetType
                   orientation = orientation }
         }
 
@@ -62,6 +69,7 @@ module Command =
                 (fun args ->
                     { collectionId = args.collectionId
                       username = args.username
+                      assetType = args.assetType
                       orientation = args.orientation
                       outputDirectory = args.output })
             |> Result.eitherMap
