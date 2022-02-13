@@ -8,7 +8,7 @@ open Spectre.Console
 open Spectre.Console.Cli
 
 open Domain.Assets.AssetEntity
-open Interface.Collections.FetchCollectionArgs
+open Interface.Assets.AssetArgs
 open Interface.Cli.Formatters
 open Interface.Commands.FetchCollectionAssets.Actors
 

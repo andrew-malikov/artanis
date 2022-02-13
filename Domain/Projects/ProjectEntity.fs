@@ -5,16 +5,18 @@ open System
 open Domain.Assets.AssetEntity
 
 module ProjectEntity =
+    type Category = { name: string; id: int }
+    
     type Project =
-        { assets: Asset List
-          categories: {| name: string; id: int |} List
+        { assets: Asset list
+          categories: Category list
           createdAt: DateTime
           description: string
           hashId: string
           id: int
           permalink: string
           publishedAt: DateTime
-          tags: string List
+          tags: string list
           title: string
           updatedAt: DateTime
           userId: int }

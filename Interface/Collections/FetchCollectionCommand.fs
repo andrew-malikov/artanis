@@ -12,9 +12,9 @@ open Domain.Assets.AssetEntity
 open Domain.Collections.CollectionEntity
 open Application.Collections.CollectionService
 open Artstation.Collections.CollectionApi
-open Interface.Collections.FetchCollectionArgs
 open Interface.FilterOptionsFactory
 open Interface.Cli.Formatters
+open Interface.Assets.AssetArgs
 
 module FetchCollectionCommand =
     type private Args =

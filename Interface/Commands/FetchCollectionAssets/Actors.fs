@@ -15,8 +15,9 @@ open Artstation.Collections.CollectionApi
 open Artstation.Assets
 open Persistence.StatefulCollectionEntity
 open Persistence.LocalAssetPersistenceService
-open Interface.Collections.FetchCollectionArgs
 open Interface.FilterOptionsFactory
+open Interface.Assets.AssetArgs
+open Interface.Projects.ProjectArgs
 
 // TODO: put the actor system along with actors
 //       and export only a function to run the system
@@ -222,7 +223,9 @@ module Actors =
                         getFilteredCollection
                             (getCollection getCollectionMetadata getAllCollectionProjects)
                             (getFilterOptions [ getOrientationFilterOption orientation
-                                                getAssetTypeFilterOption assetType ])
+                                                getAssetTypeFilterOption assetType
+                                                Some true |> getNotEmptyProjectFilterOption
+                                                Some true |> getFirstProjectAssetFilterOption ])
                             collectionId
 
                     // TODO: handle the error branch

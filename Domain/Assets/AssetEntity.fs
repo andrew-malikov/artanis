@@ -22,7 +22,7 @@ module AssetEntity =
           height: int
           id: int
           imageUrl: string
-          position: int
+          position: int option
           title: string option
           titleFormatted: string
           viewportConstraintType: string
@@ -35,7 +35,7 @@ module AssetEntity =
           height: int
           id: int
           imageUrl: string
-          position: int
+          position: int option
           title: string option
           titleFormatted: string
           viewportConstraintType: string
@@ -75,7 +75,7 @@ module AssetEntity =
           height: int
           id: int
           imageUrl: string
-          position: int
+          position: int option
           title: string option
           titleFormatted: string
           viewportConstraintType: string

@@ -1,10 +1,10 @@
-namespace Interface.Collections
+namespace Interface.Assets
 
 open Domain.Assets.AssetEntity
 open Interface.FilterOptionsFactory
 open Interface.Cli.Formatters
 
-module FetchCollectionArgs =
+module AssetArgs =
     let parseOrientation =
         function
         | "landscape" -> Some Orientation.Landscape |> Ok

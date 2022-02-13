@@ -17,8 +17,9 @@ module Api =
                             ContractResolver = DefaultContractResolver(NamingStrategy = SnakeCaseNamingStrategy())
                         )
                     ))
-    
-    let jsonConfig = JsonConfig.create(jsonFieldNaming = Json.snakeCase)
-    
-    let parseJson data: 'TData =
+
+    let jsonConfig =
+        JsonConfig.create (jsonFieldNaming = Json.snakeCase)
+
+    let parseJson data : 'TData =
         Json.deserializeEx<'TData> jsonConfig data

@@ -49,14 +49,14 @@ module ProjectApi =
 
     type Medium = { name: string; id: int }
 
-    type Category = { name: string; id: int }
+    type CategoryResponse = { name: string; id: int }
 
     type ProjectResponse =
         { adminAdultContent: bool
           adultContent: bool
-          assets: AssetResponse List
-          categories: Category List
-          commentsCount: int
+          assets: AssetResponse list option
+          categories: CategoryResponse list option
+          commentsCount: int 
           coverUrl: string
           createdAt: DateTime
           description: string
@@ -67,13 +67,13 @@ module ProjectApi =
           id: int
           likesCount: int
           medium: Medium option
-          mediums: Medium List
+          mediums: Medium list option
           permalink: string
           publishedAt: DateTime
           slug: string
-          softwareItems: SoftwareItemResponse List
+          softwareItems: SoftwareItemResponse List option
           suppressed: bool
-          tags: string List
+          tags: string list
           title: string
           updatedAt: DateTime
           user: UserResponse
@@ -85,14 +85,16 @@ module ProjectApi =
     let private toProject (projectResponse: ProjectResponse) =
         { assets =
               projectResponse.assets
+              |> Option.defaultValue []
               |> List.map toAsset
               |> List.choose id
           categories =
               projectResponse.categories
+              |> Option.defaultValue []
               |> List.map
                   (fun category ->
-                      {| id = category.id
-                         name = category.name |})
+                      { Category.id = category.id
+                        name = category.name })
           createdAt = projectResponse.createdAt
           description = projectResponse.description
           hashId = projectResponse.hashId
