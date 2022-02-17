@@ -19,9 +19,21 @@ module AssetFilters =
         | true -> Some asset
         | _ -> None
 
-    let filterAssetByEqualSize size (asset: Asset) =
-        filterAssetBySize (fun filterSize assetSize -> filterSize = assetSize) size asset
-
+    type AssetSizeComparator =
+        | Equal
+        | Less
+        | Greater
+        | LessOrEqual
+        | GreaterOrEqual
+        
+    let filterAssetBySizeComparator comparator size (asset: Asset) =
+        match comparator with
+        | Equal -> filterAssetBySize (fun filterSize assetSize -> filterSize = assetSize) size asset
+        | Less -> filterAssetBySize (fun filterSize assetSize -> filterSize > assetSize) size asset
+        | Greater -> filterAssetBySize (fun filterSize assetSize -> filterSize < assetSize) size asset
+        | LessOrEqual -> filterAssetBySize (fun filterSize assetSize -> filterSize >= assetSize) size asset
+        | GreaterOrEqual -> filterAssetBySize (fun filterSize assetSize -> filterSize <= assetSize) size asset
+    
     let filterAssetByOrientation filterOrientation (asset: Asset) =
         getAssetOrientation asset
         |> Option.bind

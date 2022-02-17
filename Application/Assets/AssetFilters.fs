@@ -36,7 +36,7 @@ module AssetFilters =
                 return
                     Some
                         { name = "bySize"
-                          selector = filterAssetBySize filterComparator filterSize }
+                          selector = filterAssetBySizeComparator filterComparator filterSize }
             }
         | "byEqualSize" ->
             result {
