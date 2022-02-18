@@ -30,4 +30,3 @@ module AssetQueries =
             | { width = width; height = height } when width > height -> Some Landscape
             | { width = width; height = height } when width < height -> Some Portrait
             | _ -> Some Square)
-

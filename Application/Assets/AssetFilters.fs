@@ -30,22 +30,12 @@ module AssetFilters =
             }
         | "bySize" ->
             result {
-                let! filterComparator = getFilterArgumentValue<Size -> Size -> bool> "comparator" option.args
-                let! filterSize = getFilterArgumentValue<Size> "size" option.args
+                let! filterAssetSizeComparator = getFilterArgumentValue<AssetSizeComparator> "comparator" option.args
 
                 return
                     Some
                         { name = "bySize"
-                          selector = filterAssetBySizeComparator filterComparator filterSize }
-            }
-        | "byEqualSize" ->
-            result {
-                let! filterSize = getFilterArgumentValue<Size> "size" option.args
-
-                return
-                    Some
-                        { selector = filterAssetByEqualSize filterSize
-                          name = "byEqualSize" }
+                          selector = filterAssetBySizeComparator filterAssetSizeComparator}
             }
         | "byOrientation" ->
             result {
