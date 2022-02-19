@@ -77,6 +77,7 @@ module Command =
                       username = args.username
                       assetType = args.assetType
                       orientation = args.orientation
+                      sizeComparator = args.sizeComparator
                       outputDirectory = args.output })
             |> Result.eitherMap
                 (fun request ->
