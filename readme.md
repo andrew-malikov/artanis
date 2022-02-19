@@ -1,5 +1,7 @@
 # Artanis
 
+![example workflow](https://github.com/VallanDeMorty/artanis/actions/workflows/tests.yml/badge.svg)
+
 A CLI to download assets from [Artstation](https://artstation.com/)
 
 ## Prerequisites
