@@ -1,6 +1,5 @@
 namespace Domain.Assets
 
-open System.Text.RegularExpressions
 open Domain.Assets.AssetEntity
 
 module AssetQueries =

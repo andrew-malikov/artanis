@@ -2,6 +2,7 @@ namespace Interface.Commands.FetchCollectionAssets
 
 open System.ComponentModel
 
+open Domain.Assets.AssetFilters
 open FsToolkit.ErrorHandling
 
 open Spectre.Console
@@ -12,18 +13,16 @@ open Interface.Assets.AssetArgs
 open Interface.Cli.Formatters
 open Interface.Commands.FetchCollectionAssets.Actors
 
-// TODO: Separate actors by different modules
-//       move out the logic to fetch collection to an actor
-//       keep only the code to run the actor system within Spectre CLI
 module Command =
     type private Args =
         { collectionId: int
           username: string
           output: string
           assetType: AssetType option
-          orientation: Orientation option }
+          orientation: Orientation option
+          sizeComparator: AssetSizeComparator option }
 
-    type Settings(collectionId, username, output, orientation, assetType) =
+    type Settings(collectionId, username, output, orientation, assetType, sizeQuery) =
         inherit CommandSettings()
 
         [<Description("Collection id")>]
@@ -46,18 +45,25 @@ module Command =
         [<CommandOption("-t|--type")>]
         member val assetType: string = assetType
 
+        // TODO: improve the documentation
+        [<Description("Size query like 'size=3280:2160'")>]
+        [<CommandOption("-s|--size")>]
+        member val sizeQuery: string = sizeQuery
+
     // TODO: adjust the model due to the new output argument
     let private parseArgs (settings: Settings) =
         result {
             let! orientation = parseOrientation settings.orientation
             let! assetType = parseAssetType settings.assetType
+            let! assetSizeComparator = parseAssetSizeComparator settings.sizeQuery
 
             return
                 { collectionId = settings.collectionId
                   username = settings.username
                   output = settings.output
                   assetType = assetType
-                  orientation = orientation }
+                  orientation = orientation
+                  sizeComparator = assetSizeComparator }
         }
 
     type Handler() =

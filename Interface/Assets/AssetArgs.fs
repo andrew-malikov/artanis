@@ -100,7 +100,7 @@ module AssetArgs =
             |> Option.map (fun sizeComparator -> Some sizeComparator |> Ok)
             |> Option.defaultValue (
                 "Option "
-                + formatOption "'type'"
+                + formatOption "'size'"
                 + " is defined but doesn't match to the pattern."
                 |> Error
             )

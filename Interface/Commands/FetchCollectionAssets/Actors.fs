@@ -1,6 +1,7 @@
 namespace Interface.Commands.FetchCollectionAssets
 
 open Akka.Routing
+open Domain.Assets.AssetFilters
 open FsToolkit.ErrorHandling
 
 open Microsoft.FSharp.Control
@@ -19,8 +20,9 @@ open Interface.FilterOptionsFactory
 open Interface.Assets.AssetArgs
 open Interface.Projects.ProjectArgs
 
-// TODO: put the actor system along with actors
-//       and export only a function to run the system
+// TODO: export only a function to run the system
+//       and what about to pass dependencies as a parameter?
+//       it definitely shall help to test the actor system
 module Actors =
     let actorSystem =
         System.create "FetchCollectionAssets" (Configuration.load ())
@@ -30,6 +32,7 @@ module Actors =
           username: string
           orientation: Orientation option
           assetType: AssetType option
+          sizeComparator: AssetSizeComparator option
           outputDirectory: string }
 
     type CollectionAsset =
@@ -211,7 +214,8 @@ module Actors =
                 | FetchCollection { collectionId = collectionId
                                     username = username
                                     orientation = orientation
-                                    assetType = assetType } ->
+                                    assetType = assetType
+                                    sizeComparator = sizeComparator } ->
 
                     let collectionId: UserCollectionId =
                         { collectionId = collectionId
@@ -224,6 +228,7 @@ module Actors =
                             (getCollection getCollectionMetadata getAllCollectionProjects)
                             (getFilterOptions [ getOrientationFilterOption orientation
                                                 getAssetTypeFilterOption assetType
+                                                getAssetSizeComparatorFilterOption sizeComparator
                                                 Some true |> getNotEmptyProjectFilterOption
                                                 Some true |> getFirstProjectAssetFilterOption ])
                             collectionId
