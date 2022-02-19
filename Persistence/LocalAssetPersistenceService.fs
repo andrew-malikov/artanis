@@ -1,7 +1,6 @@
 namespace Persistence
 
 open System.IO
-open System.Text.RegularExpressions
 
 open Domain.Assets.AssetEntity
 
@@ -26,17 +25,6 @@ module LocalAssetPersistenceService =
             printfn $"Failed to write file %s{path}: %s{error.ToString()}"
             None
 
-    let private assetExtensionsExpression = Regex @"\.(\w+)\?\d+"
-
-    let private getAssetExtension asset =
-        let matches =
-            assetExtensionsExpression.Matches asset.imageUrl
-
-        matches
-        |> Seq.filter (fun (entry: Match) -> entry.Groups.Count = 2)
-        |> Seq.tryHead
-        |> Option.bind (fun entry -> entry.Groups.Item(1).Value |> Some)
-
     let private concatPaths (path: string) appended =
         match path.EndsWith("/") with
         | true -> $"{path}{appended}"
@@ -44,12 +32,6 @@ module LocalAssetPersistenceService =
 
     let persistAsset asset basePath =
         recreateDirectory basePath
-        |> Option.bind
-            (fun basePath ->
-                match getAssetExtension asset with
-                | Some extension ->
-                    concatPaths basePath $"{asset.id}.{extension}"
-                    |> Some
-                | None -> concatPaths basePath asset.id |> Some)
+        |> Option.map (fun basePath -> concatPaths basePath $"{asset.id}.{asset.extension}")
         |> Option.bind (fun path -> writeFile path asset.content)
         |> Option.bind (fun _ -> Some asset)
