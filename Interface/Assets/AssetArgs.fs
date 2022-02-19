@@ -58,9 +58,9 @@ module AssetArgs =
     let private sizeComparatorExpression = Regex @"size(>=|<=|=|>|<)(\d+):(\d+)"
 
     type RawSizeComparator =
-        { width: string
-          height: string
-          compare: string }
+        { compare: string
+          width: string
+          height: string }
 
     let private toSizeComparator rawSizeComparator =
         try
@@ -93,9 +93,9 @@ module AssetArgs =
                     |> Seq.toList)
             |> Option.map
                 (fun groups ->
-                    { width = groups.Item 0
-                      height = groups.Item 1
-                      compare = groups.Item 2 })
+                    { compare = groups.Item 0
+                      width = groups.Item 1
+                      height = groups.Item 2 })
             |> Option.bind toSizeComparator
             |> Option.map (fun sizeComparator -> Some sizeComparator |> Ok)
             |> Option.defaultValue (
