@@ -9,6 +9,9 @@
 
     <ItemGroup>
         <Compile Include="AssetSizeComparatorTests.fs" />
+        <Compile Include="AssetOrientationTests.fs" />
+        <Compile Include="AssetTypeTests.fs" />
+        <Compile Include="AssetArgsTests.fs" />
     </ItemGroup>
 
     <ItemGroup>
