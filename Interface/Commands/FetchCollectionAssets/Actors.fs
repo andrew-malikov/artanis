@@ -1,7 +1,6 @@
 namespace Interface.Commands.FetchCollectionAssets
 
 open Akka.Routing
-open Domain.Assets.AssetFilters
 open FsToolkit.ErrorHandling
 
 open Microsoft.FSharp.Control
@@ -9,7 +8,6 @@ open Spectre.Console
 
 open Akka.FSharp
 
-open Domain.Assets.AssetEntity
 open Domain.Collections.CollectionEntity
 open Application.Collections.CollectionService
 open Artstation.Collections.CollectionApi
@@ -17,7 +15,6 @@ open Artstation.Assets
 open Persistence.StatefulCollectionEntity
 open Persistence.LocalAssetPersistenceService
 open Interface.FilterOptionsFactory
-open Interface.Assets.AssetArgs
 open Interface.Projects.ProjectArgs
 
 // TODO: export only a function to run the system
@@ -30,9 +27,7 @@ module Actors =
     type FetchCollectionAssetsRequest =
         { collectionId: int
           username: string
-          orientation: Orientation option
-          assetType: AssetType option
-          sizeComparator: AssetSizeComparator option
+          filterOptions: FilterOptionEntry list
           outputDirectory: string }
 
     type CollectionAsset =
@@ -213,9 +208,7 @@ module Actors =
                 match event with
                 | FetchCollection { collectionId = collectionId
                                     username = username
-                                    orientation = orientation
-                                    assetType = assetType
-                                    sizeComparator = sizeComparator } ->
+                                    filterOptions = filterOptions } ->
 
                     let collectionId: UserCollectionId =
                         { collectionId = collectionId
@@ -226,11 +219,11 @@ module Actors =
                     let fetchingCollectionResult =
                         getFilteredCollection
                             (getCollection getCollectionMetadata getAllCollectionProjects)
-                            (getFilterOptions [ getOrientationFilterOption orientation
-                                                getAssetTypeFilterOption assetType
-                                                getAssetSizeComparatorFilterOption sizeComparator
-                                                Some true |> getNotEmptyProjectFilterOption
-                                                Some true |> getFirstProjectAssetFilterOption ])
+                            (getFilterOptions (
+                                filterOptions
+                                @ [ Some true |> getNotEmptyProjectFilterOption
+                                    Some true |> getFirstProjectAssetFilterOption ]
+                            ))
                             collectionId
 
                     // TODO: handle the error branch

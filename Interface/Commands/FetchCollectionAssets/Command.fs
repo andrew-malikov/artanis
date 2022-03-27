@@ -2,13 +2,12 @@ namespace Interface.Commands.FetchCollectionAssets
 
 open System.ComponentModel
 
-open Domain.Assets.AssetFilters
 open FsToolkit.ErrorHandling
 
+open Interface.FilterOptionsFactory
 open Spectre.Console
 open Spectre.Console.Cli
 
-open Domain.Assets.AssetEntity
 open Interface.Assets.AssetArgs
 open Interface.Cli.Formatters
 open Interface.Commands.FetchCollectionAssets.Actors
@@ -18,11 +17,10 @@ module Command =
         { collectionId: int
           username: string
           output: string
-          assetType: AssetType option
-          orientation: Orientation option
-          sizeComparator: AssetSizeComparator option }
+          assetFilterOptions: FilterOptionEntry list }
 
-    type Settings(collectionId, username, output, orientation, assetType, sizeQuery) =
+
+    type Settings(collectionId, username, output, assetsQuery) =
         inherit CommandSettings()
 
         [<Description("Collection id")>]
@@ -37,47 +35,32 @@ module Command =
         [<CommandArgument(2, "<output>")>]
         member val output: string = output
 
-        [<Description("Assets orientation like 'landscape' 'portrait' or 'square'")>]
-        [<CommandOption("-o|--orientation")>]
-        member val orientation: string = orientation
-
-        [<Description("Assets type like 'image', 'video' or 'cover'")>]
-        [<CommandOption("-t|--type")>]
-        member val assetType: string = assetType
-
-        // TODO: improve the documentation
-        [<Description("Size query like 'size=3280:2160'")>]
-        [<CommandOption("-s|--size")>]
-        member val sizeQuery: string = sizeQuery
+        [<Description("Assets query")>]
+        [<CommandOption("-q|--query")>]
+        member val assetsQuery: string = assetsQuery
 
     // TODO: adjust the model due to the new output argument
     let private parseArgs (settings: Settings) =
         result {
-            let! orientation = parseOrientation settings.orientation
-            let! assetType = parseAssetType settings.assetType
-            let! assetSizeComparator = parseAssetSizeComparator settings.sizeQuery
+            let! assetFilterOptions = getAssetFilterOptions settings.assetsQuery
 
             return
                 { collectionId = settings.collectionId
                   username = settings.username
                   output = settings.output
-                  assetType = assetType
-                  orientation = orientation
-                  sizeComparator = assetSizeComparator }
+                  assetFilterOptions = assetFilterOptions }
         }
 
     type Handler() =
         inherit Command<Settings>()
 
-        override this.Execute(context, settings) =
+        override this.Execute(_, settings) =
             parseArgs settings
             |> Result.map
                 (fun args ->
                     { collectionId = args.collectionId
                       username = args.username
-                      assetType = args.assetType
-                      orientation = args.orientation
-                      sizeComparator = args.sizeComparator
+                      filterOptions = args.assetFilterOptions
                       outputDirectory = args.output })
             |> Result.eitherMap
                 (fun request ->

@@ -14,10 +14,10 @@ For example, there is a collection link `https://www.artstation.com/es-andrew/co
 
 ## Basic Usage
 
-To just download image assets you have to specify an additional argument `-t "image"`
+To just download image assets you have to specify an additional argument `-q "type=image"`
 
 ```bash
-artanis collection-assets 1516043 "es-andrew" "./artstation" -t "image" 
+artanis collection-assets 1516043 "es-andrew" "./artstation" -q "type=image" 
 ```
 
 ## Corner Cases

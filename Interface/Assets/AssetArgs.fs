@@ -17,7 +17,7 @@ module AssetArgs =
         + formatOption "'orientation'"
         + " is defined but doesn't match to the available values."
 
-    let parseOrientation =
+    let private parseOrientation =
         function
         | null -> Ok None
         | (query: string) ->
@@ -45,7 +45,7 @@ module AssetArgs =
         + formatOption "'type'"
         + " is defined but doesn't match to the available values."
 
-    let parseAssetType =
+    let private parseAssetType =
         function
         | null -> Ok None
         | (query: string) ->
@@ -108,7 +108,7 @@ module AssetArgs =
         + formatOption "'size'"
         + " is defined but doesn't match to the pattern."
 
-    let parseAssetSizeComparator query =
+    let private parseAssetSizeComparator query =
         match query with
         | null -> Ok None
         | _ ->
